@@ -29,6 +29,7 @@ let studentSchema = new Schema({
     highSchoolPassingYear : {type :Number},
     interPassingYear: {type : Number},
     btechYear : {type :Number},
+    isProfileComplete : {type : Boolean,default: false},
     isDeleted : {type : Boolean, default : false},
     isBlocked : {type : Boolean, default : false},
 },{

@@ -28,8 +28,8 @@ router.post('/login',studentControllers.login)
 router.get('/profile',auth,studentControllers.profile)
 router.put('/editProfile',auth,studentControllers.editProfile)
 router.post('/apply',auth,studentControllers.apply)
-router.get('/getPosts',auth,studentControllers.getPosts)
-router.get('getAppliedPosts',auth,studentControllers.getAppliedPosts)
+router.get('/getCurrentPost',auth,studentControllers.getCurrentPost)
+// router.get('getAppliedPosts',auth,studentControllers.getAppliedPosts)
 
 
 module.exports = router;

@@ -18,7 +18,8 @@ const login = async(req,res,next)=>{
     const token = await user.generateAuthToken()
     res.status(200).json({
       message : "Success",
-      token:token
+      token:token,
+      isAdmin : true
     })
 } catch (error) {
  
@@ -159,10 +160,10 @@ const getStudents = async(req,res,next)=>{
   try {
     let payloadData= req.query
     let criteria = {
-      isDeleted : false
+      isDeleted : false,
+      isBlocked: false
     }
     if(payloadData.isPlaced==1){
-      console.log("ssss")
       let data=[]
       let placedStudents = await Application.find({isDeleted :false,isBlocked:false, isOffered : true});
       for(let key of placedStudents)
@@ -185,7 +186,13 @@ const getStudents = async(req,res,next)=>{
 let options = {
   sort : {rollNo : 1}
 }
-    let students = await Student.find(criteria,{},options)
+    let students = await Student.find(criteria,{},options).populate({
+      modal: Branch,
+      path :'branchId'
+    }).populate({
+      modal: Batch,
+      path :'batchId'
+    })
     return res.status(200).json(students)
     
   } catch (error) {
@@ -270,6 +277,123 @@ const getBranch = async(req,res,next)=>{
     res.status(400).send(error)
   }
 }
+const deleteStudents= async(req,res,next)=>{
+  try {
+    let studentIds= req.body.studentId
+    await Student.updateMany({_id : {$in : studentIds}},{isDeleted : true})
+    return res.status(200).json({message : "Success"})
+    
+  } catch (error) {
+    res.status(400).send(error)
+  }
+}
+const blockStudents= async(req,res,next)=>{
+  try {
+    let studentIds= req.body.studentId
+    await Student.updateMany({_id : {$in : studentIds}},{isBlocked : true})
+    return res.status(200).json({message : "Success"})
+    
+  } catch (error) {
+    res.status(400).send(error)
+  }
+}
+const getAppliedStudents = async(req,res,next)=>{
+  try { 
+    let payloadData= req.query
+    let postId = payloadData.postId
+    let criteria = {
+      isDeleted : false,
+      isBlocked : false,
+      postId : postId
+    }
+    let applications = await Application.find(criteria).populate({
+      modal : Student,
+      path : 'studentId'
+    }).populate({
+      modal : Branch,
+      path : 'branchId'
+    }).populate({
+      modal : Batch,
+      path : 'batchId'
+    }) 
+
+    let data = []
+    for(let key of applications){
+      key.studentId.branch= key.branchId?.code,
+
+      key.studentId.batch= key.batchId?.name
+      
+      data.push(
+        key.studentId
+      )
+    } 
+    const csvString = [
+      [
+       
+        "email",
+        "name",
+        "rollNo" ,
+        "gender" ,
+        "phoneNo" ,
+        "dob" ,
+        "branch" ,
+        "batch" ,
+        "backlogs",
+        "educationGap" ,
+        "resume",
+        "application",
+        "undertaking",
+        "highSchoolPercentage",
+        "highSchoolCGPA" ,
+        "interPercentage",
+        "interCGPA" ,
+        "bTechPercentage",
+        "bTechCGPA" ,
+        "highSchoolPassingYear" ,
+        "interPassingYear",
+        "btechYear" 
+      ],
+      ...data.map(item => [
+        item.email,
+        item.name,
+        item.rollNo ,
+        item.gender ,
+        item.phoneNo ,
+        item.dob,
+        item.branch,
+        item.batch,
+        item.backlogs,
+        item.educationGap ,
+        item.resume,
+        item.highSchoolPercentage,
+        item.highSchoolCGPA,
+        item.interPercentage,
+        item.interCGPA ,
+        item.bTechPercentage,
+        item.bTechCGPA ,
+        item.highSchoolPassingYear,
+        item.interPassingYear,
+        item.btechYear 
+      ])
+    ]   .map(e => e.join(",")) 
+    .join("\n");
+return res.status(200).json(csvString)
+    
+  } catch (error) {
+    res.status(400).send(error)
+  }
+}
+const deleteBranch= async(req,res,next)=>{
+  try {
+    let branchId= req.body.branchId
+    await Branch.updateMany({_id : branchId},{isDeleted : true})
+    return res.status(200).json({message : "Success"})
+    
+  } catch (error) {
+    res.status(400).send(error)
+  }
+}
+
 module.exports = {
   login,
   addBranch,
@@ -283,5 +407,9 @@ getPosts,
 getCurrentPost,
 markAppStatus,
 getBatch,
-getBranch
+getBranch,
+blockStudents,
+deleteStudents,
+getAppliedStudents,
+deleteBranch
 };

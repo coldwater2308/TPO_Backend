@@ -6,6 +6,8 @@ let applicationSchema = new Schema({
      status : {type : String , default : 'applied'},   
      remarks : [{remark : String, time : Date}],
      role : {type : String},
+     branchId : {type: Schema.ObjectId,ref:'Branch',sparse :true},
+     batchId : {type: Schema.ObjectId,ref:'Branch',sparse :true},
      postId : {type: Schema.ObjectId,ref:'Post',sparse :true},
      isOffered : {type : Boolean, default : false},
      ctc : {type : String},
