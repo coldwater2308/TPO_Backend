@@ -10,7 +10,6 @@ aws.config.update({
   accessKeyId: process.env.ACCESS_KEY_ID,
 });
 
-
 const s3 = new aws.S3();
 
 var upload = multer({
@@ -19,17 +18,16 @@ var upload = multer({
     bucket: "3d-idesign",
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
-      cb(null, Date.now().toString()+path.extname(file.originalname));
+      cb(null, Date.now().toString() + path.extname(file.originalname));
     },
   }),
 });
 
-router.post('/login',studentControllers.login)
-router.get('/profile',auth,studentControllers.profile)
-router.put('/editProfile',auth,studentControllers.editProfile)
-router.post('/apply',auth,studentControllers.apply)
-router.get('/getPosts',auth,studentControllers.getPosts)
-router.get('getAppliedPosts',auth,studentControllers.getAppliedPosts)
-
+router.post("/login", studentControllers.login);
+router.get("/profile", auth, studentControllers.profile);
+router.put("/editProfile", auth, studentControllers.editProfile);
+// router.post('/apply',auth,studentControllers.apply)
+// router.get('/getPosts',auth,studentControllers.getPosts)
+// router.get('getAppliedPosts',auth,studentControllers.getAppliedPosts)
 
 module.exports = router;
