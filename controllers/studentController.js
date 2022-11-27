@@ -28,14 +28,7 @@ const login = async (req, res, next) => {
 };
 const profile = async (req, res, next) => {
   try {
-    let payloadData = req.body;
-    let id = req.student.id;
-    let update = await Student.findByIdAndUpdate(id, payloadData, {
-      new: true,
-    });
-    return res.status(200).json({
-      message: "Success",
-    });
+    return res.status(200).json(req.student);
   } catch (err) {
     res.status(400).json({
       message: "error",

@@ -114,6 +114,7 @@ const addBatch = async (req, res, next) => {
 const addPost = async (req, res, next) => {
   try {
     let payloadData = req.body;
+    console.log("body", res.body);
     let post = new Post(payloadData);
     await post.save();
     return res.status(200).json(post);
