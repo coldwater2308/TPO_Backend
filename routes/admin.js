@@ -46,7 +46,10 @@ router.post('/markAppStatus',auth,adminController.markAppStatus)
 
 router.get('/getBranch',adminController.getBranch) 
 router.get('/getBatch',adminController.getBatch)
+router.post('/deleteBranch',auth,adminController.deleteBranch)
 
+
+router.get('/getAppliedStudents',auth,adminController.getAppliedStudents)
 
 
 module.exports = router;
