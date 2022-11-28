@@ -194,7 +194,7 @@ const getStudents = async (req, res, next) => {
 };
 const getPosts = async (req, res, next) => {
   try {
-    let payloadData = req.query;
+    let payloadData = req?.body;
 
     let criteria = {
       isDeleted: false,

@@ -42,7 +42,7 @@ router.post("/addBranch", auth, adminController.addBranch);
 router.post("/addBatch", auth, adminController.addBatch);
 
 router.post("/addPost", adminController.addPost);
-router.get("/getPosts", auth, adminController.getPosts);
+router.post("/getPosts", auth, adminController.getPosts);
 router.get("/getCurrentPost", auth, adminController.getCurrentPost);
 router.get("/getPost", auth, adminController.getPost);
 

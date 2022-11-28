@@ -91,8 +91,8 @@ const getApplications = async (req, res, next) => {
 };
 const getCurrentPost = async (req, res, next) => {
   try {
-    let payloadData = req.query;
-
+    let payloadData = req?.body;
+    console.log("body");
     let criteria = {
       isDeleted: false,
       isBlocked: false,
