@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken')
 const admin = require('../models/Admin')
+const Batch = require('../models/Batch')
+const Branch = require('../models/Branch')
 const Student = require('../models/Student')
 
 const auth = async(req, res, next) => {
@@ -11,7 +13,13 @@ const auth = async(req, res, next) => {
 
       const data = jwt.verify(token, process.env.STUDENT_JWT_SECRET)
       
-        const student = await Student.findOne({ _id: data._id})
+        const student = await Student.findOne({ _id: data._id}).populate({
+            modal : Batch,
+            path : 'batchId'
+        }).populate({
+            modal : Branch,
+            path : 'branchId'
+        })
         
         if (!student) {
             throw new Error()

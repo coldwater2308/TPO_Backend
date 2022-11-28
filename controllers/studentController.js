@@ -86,7 +86,7 @@ const getApplications = async(req,res,next)=>{
 }
 const getCurrentPost = async(req,res,next)=>{
   try {
-    let payloadData= req.query
+    let payloadData= req.body
 
     let criteria = {
       isDeleted : false,
@@ -100,6 +100,24 @@ const getCurrentPost = async(req,res,next)=>{
     criteria.batchId = payloadData.batchId
     if(payloadData.branchId)
     criteria.branchId = payloadData.branchId
+
+    if(payloadData.select ==0){
+      let postIds=[]
+      let application = await Application.find({isDeleted : false , isBlocked:false, isOffered : false , studentId: req.student._id})
+     for(let key of application)
+     postIds.push(key.postId)
+      criteria._id = {$in : postIds}
+
+    }
+    if(payloadData.select ==1){
+      let postIds=[]
+      let application = await Application.find({isDeleted : false , isBlocked:false, isOffered : true , studentId: req.student._id})
+     for(let key of application)
+     postIds.push(key.postId)
+      criteria._id = {$in : postIds}
+
+    }
+  
     let posts= await Post.find(criteria)
     return res.status(200).json(posts)
   } catch (error) {

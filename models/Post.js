@@ -8,7 +8,7 @@ let postSchema = new Schema({
      branchId : {type: Schema.ObjectId,ref:'Branch',sparse :true},
      batchId : {type: Schema.ObjectId,ref:'Branch',sparse :true},
      companyName : {type : String},
-     type : {type : String , defaut : 'fullTime'}, //    fullTime Internship fullTimeWithIntern
+     type : {type : String , defaut : 'fullTime'}, //    fullTime internship fullTimeWithIntern
      lastDate : {type : Date},
     driveDate : {type : Date},
     prePlacementTalkDate : {type : Date},
