@@ -6,6 +6,7 @@ const Post = require("../models/Post");
 const Student = require("../models/Student");
 const mongoXlsx = require("mongo-xlsx");
 const bcrypt = require("bcryptjs");
+const News = require("../models/News");
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -284,7 +285,7 @@ const blockStudents = async (req, res, next) => {
     res.status(400).send(error);
   }
 };
-const getAppliedStudents = async (req, res, next) => {
+const getAppliedStudentsCSV = async (req, res, next) => {
   try {
     let payloadData = req.query;
     let postId = payloadData.postId;
@@ -369,6 +370,41 @@ const getAppliedStudents = async (req, res, next) => {
     res.status(400).send(error);
   }
 };
+const getAppliedStudents = async (req, res, next) => {
+  try {
+    let payloadData = req.query;
+    let postId = payloadData.postId;
+    let criteria = {
+      isDeleted: false,
+      isBlocked: false,
+      postId: postId,
+    };
+    let applications = await Application.find(criteria)
+      .populate({
+        modal: Student,
+        path: "studentId",
+      })
+      .populate({
+        modal: Branch,
+        path: "branchId",
+      })
+      .populate({
+        modal: Batch,
+        path: "batchId",
+      });
+
+    let data = [];
+    for (let key of applications) {
+      (key.studentId.branch = key.branchId?.code),
+        (key.studentId.batch = key.batchId?.name);
+
+      data.push(key.studentId);
+    }
+    return res.status(200).json(data);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
 const deleteBranch = async (req, res, next) => {
   try {
     let branchId = req.body.branchId;
@@ -376,6 +412,58 @@ const deleteBranch = async (req, res, next) => {
     return res.status(200).json({ message: "Success" });
   } catch (error) {
     res.status(400).send(error);
+  }
+};
+const addNewsAndUpdates = async (req, res, next) => {
+  try {
+    let payloadData = req.body;
+
+    let news = new News(payloadData);
+    await news.save();
+    return res.status(200).json(news);
+  } catch (error) {
+    return res.status(400).json({
+      message: "error",
+    });
+  }
+};
+const getNewsAndUpdates = async(req,res,next)=>{
+  try {
+    let payloadData= req.body
+    let criteria = {
+      isDeleted: false,
+      isBlocked: false,
+    };
+    if (payloadData.type) criteria.type = payloadData.type;
+    if (payloadData.status) criteria.status = payloadData.status;
+    if (payloadData.batchId) criteria.batchId = payloadData.batchId;
+    if (payloadData.branchId) criteria.branchId = payloadData.branchId; 
+    let options= {
+      sort : {
+        _id : -1
+      }
+    }
+    let data = await News.find(criteria,{},options)
+    return res.status(200).json(data)
+    
+  } catch (error) {
+    return res.status(400).json({
+      message: "error",
+    });
+  }
+}
+const deleteNewsAndUpdates = async (req, res, next) => {
+  try {
+    let id = req.body.id;
+ await News.findByIdAndUpdate(id,{isDeleted : true})
+ 
+    return res.status(200).json({
+      message : "Success"
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: "error",
+    });
   }
 };
 
@@ -395,6 +483,10 @@ module.exports = {
   getBranch,
   blockStudents,
   deleteStudents,
+  getAppliedStudentsCSV,
   getAppliedStudents,
   deleteBranch,
+  addNewsAndUpdates,
+  getNewsAndUpdates,
+  deleteNewsAndUpdates
 };

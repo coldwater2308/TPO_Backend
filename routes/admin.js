@@ -52,6 +52,11 @@ router.get("/getBranch", adminController.getBranch);
 router.get("/getBatch", adminController.getBatch);
 router.post("/deleteBranch", auth, adminController.deleteBranch);
 
+router.get("/getAppliedStudentsCSV", auth, adminController.getAppliedStudentsCSV);
 router.get("/getAppliedStudents", auth, adminController.getAppliedStudents);
+
+router.post("/addNewsAndUpdates", auth, adminController.addNewsAndUpdates);
+router.post("/getNewsAndUpdates", auth, adminController.getNewsAndUpdates);
+router.post("/deleteNewsAndUpdates", auth, adminController.deleteNewsAndUpdates);
 
 module.exports = router;

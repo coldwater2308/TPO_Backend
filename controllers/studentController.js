@@ -105,23 +105,30 @@ const getCurrentPost = async (req, res, next) => {
       _id : {$nin : postIds}
     };
     if (payloadData.type) criteria.type = payloadData.type;
-    if (payloadData.batchId) criteria.batchId = payloadData.batchId;
-    if (payloadData.branchId) criteria.branchId = payloadData.branchId;
-    if (payloadData.branchId) criteria.branchId = payloadData.branchId;
+    if (payloadData.batchId) criteria.batchId = req.student.batchId;
+    if (payloadData.branchId) criteria.branchId =  req.student.branchId;
 console.log("body->",payloadData.status)
 if(payloadData.status ==0){
   criteria._id = {$in : postIds}
   delete criteria.lastDate
 }
+let options= {
+  sort : {
+    _id : -1
+  }
+}
 if(payloadData.status ==1){
-  let app = await Application.find({isDeleted : false,isBlocked:false,studentId : req.student._id,isOffered : true})
+  let app = await Application.find({isDeleted : false,isBlocked:false,status : 'applied',studentId : req.student._id,isOffered : true})
   let pIds=[]
   for(let key of app)
   pIds.push(key.postId)
   criteria._id = {$in : pIds}
   delete criteria.lastDate
 }
-    let posts = await Post.find(criteria);
+if(payloadData.status ==2){
+  delete criteria.lastDate
+}
+    let posts = await Post.find(criteria,{},options);
     return res.status(200).json(posts);
   } catch (error) {
     return res.status(400).json({
@@ -129,7 +136,31 @@ if(payloadData.status ==1){
     });
   }
 };
-
+const getNewsAndUpdates = async(req,res,next)=>{
+  try {
+    let payloadData= req.body
+    let criteria = {
+      isDeleted: false,
+      isBlocked: false,
+    };
+    if (payloadData.type) criteria.type = payloadData.type;
+    if (payloadData.status) criteria.status = payloadData.status;
+    if (payloadData.batchId) criteria.batchId =  req.student.batchId;
+    if (payloadData.branchId) criteria.branchId =  req.student.branchId; 
+    let options= {
+      sort : {
+        _id : -1
+      }
+    }
+    let data = await News.find(criteria,{},options)
+    return res.status(200).json(data)
+    
+  } catch (error) {
+    return res.status(400).json({
+      message: "error",
+    });
+  }
+}
 
 module.exports = {
   login,
@@ -138,4 +169,5 @@ module.exports = {
   apply,
   getApplications,
   getCurrentPost,
+  getNewsAndUpdates
 };

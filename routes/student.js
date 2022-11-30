@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../middlewares/student");
 const studentControllers = require("../controllers/studentController");
+const adminController= require('../controllers/adminControllers')
 const multer = require("multer");
 const multerS3 = require("multer-s3");
 const aws = require("aws-sdk");
@@ -28,6 +29,8 @@ router.get("/profile", auth, studentControllers.profile);
 router.put("/editProfile", auth, studentControllers.editProfile);
 router.post("/apply", auth, studentControllers.apply);
 router.post("/getCurrentPost", auth, studentControllers.getCurrentPost);
-// router.get('getAppliedPosts',auth,studentControllers.getAppliedPosts)
+router.get("/getNewsAndUpdates", auth, studentControllers.getNewsAndUpdates);
+router.get("/getBranch", adminController.getBranch);
+router.get("/getBatch", adminController.getBatch);
 
 module.exports = router;
