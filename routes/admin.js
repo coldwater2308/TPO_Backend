@@ -43,7 +43,7 @@ router.post("/addBatch", auth, adminController.addBatch);
 
 router.post("/addPost", adminController.addPost);
 router.post("/getPosts", auth, adminController.getPosts);
-router.get("/getCurrentPost", auth, adminController.getCurrentPost);
+router.post("/getCurrentPost", auth, adminController.getCurrentPost);
 router.get("/getPost", auth, adminController.getPost);
 
 router.post("/markAppStatus", auth, adminController.markAppStatus);

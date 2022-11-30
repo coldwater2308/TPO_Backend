@@ -126,7 +126,7 @@ const addPost = async (req, res, next) => {
 };
 const getCurrentPost = async (req, res, next) => {
   try {
-    let payloadData = req.query;
+    let payloadData = req.body;
 
     let criteria = {
       isDeleted: false,
