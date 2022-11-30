@@ -10,7 +10,7 @@ const auth = async (req, res, next) => {
 
     const data = jwt.verify(token, process.env.STUDENT_JWT_SECRET);
 
-    const student = await Student.findOne({ _id: data._id });
+    const student = await Student.findOne({ _id: data._id }).populate('branchId').populate('batchId')
 
     if (!student) {
       throw new Error();

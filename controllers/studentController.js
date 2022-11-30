@@ -93,15 +93,34 @@ const getCurrentPost = async (req, res, next) => {
   try {
     let payloadData = req?.body;
     console.log("body");
+    let applications = await Application.find({isDeleted : false,isBlocked:false,studentId : req.student._id})
+    let postIds=[]
+    for(let key of applications)
+    postIds.push(key.postId)
     let criteria = {
       isDeleted: false,
       isBlocked: false,
       status: "active",
       lastDate: { $gte: new Date() },
+      _id : {$nin : postIds}
     };
     if (payloadData.type) criteria.type = payloadData.type;
     if (payloadData.batchId) criteria.batchId = payloadData.batchId;
     if (payloadData.branchId) criteria.branchId = payloadData.branchId;
+    if (payloadData.branchId) criteria.branchId = payloadData.branchId;
+console.log("body->",payloadData.status)
+if(payloadData.status ==0){
+  criteria._id = {$in : postIds}
+  delete criteria.lastDate
+}
+if(payloadData.status ==1){
+  let app = await Application.find({isDeleted : false,isBlocked:false,studentId : req.student._id,isOffered : true})
+  let pIds=[]
+  for(let key of app)
+  pIds.push(key.postId)
+  criteria._id = {$in : pIds}
+  delete criteria.lastDate
+}
     let posts = await Post.find(criteria);
     return res.status(200).json(posts);
   } catch (error) {
@@ -110,6 +129,7 @@ const getCurrentPost = async (req, res, next) => {
     });
   }
 };
+
 
 module.exports = {
   login,
